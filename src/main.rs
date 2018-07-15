@@ -1,3 +1,6 @@
+
+use scene::Scene;
+
 fn main() {
-    println!("Hello, world!");
+    let _scene: Scene;
 }
