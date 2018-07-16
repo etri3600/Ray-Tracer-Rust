@@ -10,7 +10,6 @@ mod ray;
 
 use scene::*;
 use point::Point;
-use image::DynamicImage;
 
 fn main() {
     let scene = Scene {
@@ -32,7 +31,7 @@ fn main() {
         }
     };
     let image = render(&scene);
-    let r = image.save(std::path::Path::new("D:\\test.bmp"));
+    let r = image.save(std::path::Path::new(r#"./Render.png"#));
     if r.is_err(){
         println!("last OS error: {:?}", std::io::Error::last_os_error());
     }

@@ -11,14 +11,33 @@
             "program": "${workspaceFolder}/target/debug/Ray-Tracer.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "cargo build"
+            "preLaunchTask": "cargo build",
+            "sourceLanguages": ["rust"],
         },
         {
             "type": "lldb",
             "request": "attach",
             "name": "Attach",
-            "program": "${workspaceFolder}/target/debug/Ray-Tracer.exe"
+            "program": "${workspaceFolder}/target/debug/Ray-Tracer.exe",
+            "sourceLanguages": ["rust"],
         },
-
+        {
+            "name": "(Windows) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/Ray-Tracer.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "cargo build",
+        },
+        {
+            "name": "(Windows) Attach",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId":"${command:pickProcess}",
+        },
     ]
 }
