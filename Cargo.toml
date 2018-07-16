@@ -5,3 +5,5 @@ authors = ["etri"]
 
 [dependencies]
 image = "*"
+serde = "*"
+serde_derive = "*"
