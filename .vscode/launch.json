@@ -5,14 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug",
+            "name": "Launch Program",
             "type": "gdb",
             "request": "launch",
-            "target": "./target/debug/Ray-Tracer",
+            "target": "${workspaceFolder}/target/debug/Ray-Tracer",
             "cwd": "${workspaceRoot}",
             "windows": {
-                "target": "./target/debug/Ray-Tracer.exe"
+                "target": "${workspaceFolder}/target/debug/Ray-Tracer.exe"
             }
-        }
+        },
+        {
+            "name": "(Windows) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/Ray-Tracer.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+        },
     ]
 }
