@@ -1,6 +1,6 @@
 use std::ops::{Mul, Index, IndexMut};
 use point::Point;
-use vector::Vector3;
+use math::vector::Vector3;
 
 #[derive(Clone, Debug)]
 pub struct Matrix {

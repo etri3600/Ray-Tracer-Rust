@@ -1,6 +1,6 @@
 use scene::Scene;
 use point::Point;
-use vector::Vector3;
+use math::vector::Vector3;
 
 pub struct Ray{
     pub origin: Point,

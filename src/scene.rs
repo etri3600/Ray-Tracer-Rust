@@ -9,12 +9,12 @@ pub struct Scene {
     pub width: u32,
     pub height: u32,
     pub fov: f64,
-    pub shapes: Vec<&'static Shape>,
+    pub shapes: Vec<&'static dyn Shape>,
 }
 
 pub fn render(scene: &Scene) -> DynamicImage{
     let mut image = DynamicImage::new_rgb8(scene.width, scene.height);
-    let black = Rgba{ data: [0,0,0,0] };
+    let black = Rgba{ data: [0, 0, 0, 255] };
     for x in 0..scene.width{
         for y in 0..scene.height{
             let ray = Ray::create_normal_ray(x, y, scene);

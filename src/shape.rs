@@ -1,6 +1,6 @@
 use point::Point;
-use vector::Vector3;
-use quaternion::Quat;
+use math::vector::Vector3;
+use math::quaternion::Quat;
 use ray::Ray;
 
 use image::{Rgba, Pixel};
@@ -16,7 +16,6 @@ fn gamma_decode(encoded: f32) -> f32 {
 }
 
 #[derive(Copy, Clone, Debug, Deserialize)]
-#[repr(C)]
 pub struct Color {
     pub red: f32,
     pub green: f32,
@@ -46,13 +45,9 @@ pub trait Intersectable{
     fn intersect(&self, ray: &Ray) -> bool;
 }
 
-pub trait Shape {
+pub trait Shape : Intersectable {
     fn location(&self) -> Point;
     fn color(&self) -> Color;
-}
-
-impl Intersectable for Shape {
-    fn intersect(&self, ray: &Ray) -> bool { false }
 }
 
 #[derive(Deserialize)]

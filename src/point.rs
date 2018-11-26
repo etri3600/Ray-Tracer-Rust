@@ -1,5 +1,5 @@
 use std::ops::{Add, Sub};
-use vector::Vector3;
+use math::vector::Vector3;
 
 #[derive(Copy, Clone, Debug, Deserialize)]
 #[repr(C)]
