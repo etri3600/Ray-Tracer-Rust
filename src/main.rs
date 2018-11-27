@@ -8,10 +8,15 @@ mod math;
 mod point;
 mod ray;
 mod shape;
+mod light;
+mod color;
 
 use scene::*;
 use shape::*;
 use point::Point;
+use color::Color;
+use light::*;
+use math::vector::Vector3;
 
 use std::vec::Vec;
 
@@ -25,10 +30,10 @@ fn main() {
             },
             radius: 1.0,
             color: Color{
-                red: 0.4,
-                green: 1.0,
-                blue: 0.4,
-                alpha: 1.0
+                r: 0.4,
+                g: 1.0,
+                b: 0.4,
+                a: 1.0
             },
     });
 
@@ -36,6 +41,12 @@ fn main() {
         width: 800,
         height: 600,
         fov: 90.0,
+        light: Light {
+            location: Point::zero(),
+            direction: Vector3{ x: -1.0, y: -1.0, z: 0.0 },
+            light_type: LightType::Directional,
+            color: Color { r: 0.4, g: 0.4, b: 0.1, a: 0.0 }
+        },
         shapes
     };
     let image = render(&scene);

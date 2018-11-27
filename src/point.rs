@@ -16,6 +16,10 @@ impl Point {
     pub fn from_one(v: f64) -> Point {
         Point { x: v, y: v, z: v }
     }
+
+    pub fn size_squared(&self) -> f64 {
+        self.x * self.x + self.y * self.y + self.z * self.z
+    }
 }
 
 impl Add<Vector3> for Point {

@@ -8,7 +8,7 @@ pub struct Ray{
 }
 
 impl Ray{
-    pub fn create_normal_ray(x: u32, y: u32, scene: &Scene) -> Ray{
+    pub fn create_primary_ray(x: u32, y: u32, scene: &Scene) -> Ray{
         assert!(scene.width > scene.height);
         let fov_adjustment = (scene.fov.to_radians() / 2.0).tan();
         let aspect_ratio = (scene.width as f64) / (scene.height as f64);
