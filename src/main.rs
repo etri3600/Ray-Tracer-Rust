@@ -37,6 +37,21 @@ fn main() {
             },
     });
 
+    shapes.push(&Sphere{
+            center: Point{
+                x: 2.0,
+                y: 1.0,
+                z: -5.0,
+            },
+            radius: 0.5,
+            color: Color{
+                r: 0.0,
+                g: 0.1,
+                b: 8.0,
+                a: 1.0
+            },
+    });
+
     let scene = Scene {
         width: 800,
         height: 600,
