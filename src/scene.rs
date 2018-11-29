@@ -29,7 +29,12 @@ pub fn render(scene: &Scene) -> DynamicImage{
 }
 
 pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
-    let color: Color;
+    let mut color: Color;
+    const BLACK: Color = Color { r:0.0, g:0.0, b:0.0, a:1.0 };
+
+    if order > 1 {
+        return BLACK;
+    }
 
     let mut hit_normal = Vector3::zero();
     let mut hit_point = Vector3::zero();
@@ -62,17 +67,23 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
 
         if shape.intersect(&sray, &mut shit_normal, &mut shit_point) {
             // shadow
-            color = shape.color();
+            color = BLACK;
         }
         else {
             // light
             color = shape.color() * scene.light.color;
         }
 
-        // may reflection or refration calculation
+        let light_tuple = light_calculation(ray.direction, hit_normal, 1.0, shape.refractive_index());
+        // reflection
+        color = color + light_tuple.0 * trace(scene, Ray { origin: hit_point, direction: light_tuple.1 }, order + 1);
+        // refraction
+        if light_tuple.0 < 1.0 {
+            color = color + (1.0 - light_tuple.0) * trace(scene, Ray { origin: hit_point, direction: light_tuple.2 }, order + 1);
+        }
     }
     else {
-        color = Color { r:0.0, g:0.0, b:0.0, a:1.0 };
+        color = Color { r:0.2, g:0.2, b:0.2, a:1.0 };
     }
 
     color
@@ -111,4 +122,31 @@ fn reflectance(incident: Vector3, normal: Vector3, n1: f32, n2: f32, refracted_r
     let ortho = (n1 as f64 * cos_i - n2 as f64 * cos_t) / (n1 as f64 * cos_i + n2 as f64 * cos_t);
     let parallel = (n2 as f64 * cos_i - n1 as f64 * cos_t) / (n2 as f64 * cos_i + n1 as f64 * cos_t);
     ((ortho * ortho + parallel * parallel) / 2.0) as f32
+}
+
+fn light_calculation(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> (f32, Vector3, Vector3) {
+    let mut reflectance = 0.5;
+    let mut refraction_ray = Vector3::zero();
+    
+    let n = (n1 / n2) as f64;
+    let cos_i = -incident.dot(&normal);
+    let sin_t2 = n * n * (1.0 - cos_i * cos_i);
+    if sin_t2 > 1.0 {
+        // total infernal reflection
+        reflectance = 1.0;
+    }
+    else {
+        let cos_t = (1.0 - sin_t2).sqrt();
+
+        let ortho = (n1 as f64 * cos_i - n2 as f64 * cos_t) / (n1 as f64 * cos_i + n2 as f64 * cos_t);
+        let parallel = (n2 as f64 * cos_i - n1 as f64 * cos_t) / (n2 as f64 * cos_i + n1 as f64 * cos_t);
+
+        reflectance = ((ortho * ortho + parallel * parallel) / 2.0) as f32;
+        reflectance = 0.5;
+        refraction_ray = n * incident + (n * cos_i - cos_t) * normal;
+    }
+    
+    let reflection_ray = incident + 2.0 * cos_i * normal;
+
+    (reflectance, reflection_ray, refraction_ray)
 }

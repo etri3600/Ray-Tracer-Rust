@@ -38,11 +38,11 @@ fn main() {
 
     shapes.push(&Sphere{
             center: Vector3{
-                x: 2.0,
-                y: 1.0,
-                z: -5.0,
+                x: -4.0,
+                y: 2.0,
+                z: -8.0,
             },
-            radius: 0.5,
+            radius: 2.0,
             color: Color{
                 r: 0.0,
                 g: 0.1,
@@ -50,6 +50,38 @@ fn main() {
                 a: 1.0
             },
             refractive_index: 1.2
+    });
+
+    shapes.push(&Sphere{
+            center: Vector3{
+                x: -1.0,
+                y: -1.0,
+                z: -2.0,
+            },
+            radius: 0.3,
+            color: Color{
+                r: 1.0,
+                g: 1.0,
+                b: 0.0,
+                a: 1.0
+            },
+            refractive_index: 1.4
+    });
+
+    shapes.push(&Sphere{
+            center: Vector3{
+                x: 2.0,
+                y: 1.0,
+                z: -5.0,
+            },
+            radius: 0.5,
+            color: Color{
+                r: 0.0,
+                g: 1.0,
+                b: 1.0,
+                a: 1.0
+            },
+            refractive_index: 1.5
     });
 
     let scene = Scene {
@@ -60,7 +92,7 @@ fn main() {
             location: Vector3::zero(),
             direction: Vector3{ x: -1.0, y: -1.0, z: 0.0 },
             light_type: LightType::Directional,
-            color: Color { r: 0.4, g: 0.4, b: 0.1, a: 0.0 }
+            color: Color { r: 0.4, g: 0.4, b: 0.1, a: 1.0 }
         },
         shapes
     };
