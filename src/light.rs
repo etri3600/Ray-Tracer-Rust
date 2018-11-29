@@ -11,5 +11,6 @@ pub struct Light {
     pub location: Vector3,
     pub direction: Vector3,
     pub light_type: LightType,
-    pub color: Color,
+    pub diffuse_color: Color,
+    pub specular_color: Color,
 }

@@ -2,6 +2,7 @@ use shape::Shape;
 use math::vector::Vector3;
 use light::*;
 use color::Color;
+use math::clamp;
 
 use std::vec::Vec;
 
@@ -12,7 +13,7 @@ pub struct Scene {
     pub width: u32,
     pub height: u32,
     pub fov: f64,
-    pub light: Light,
+    pub lights: Vec<Light>,
     pub shapes: Vec<&'static dyn Shape>,
 }
 
@@ -29,8 +30,8 @@ pub fn render(scene: &Scene) -> DynamicImage{
 }
 
 pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
-    let mut color: Color;
     const BLACK: Color = Color { r:0.0, g:0.0, b:0.0, a:1.0 };
+    let mut color: Color = BLACK;
 
     if order > 1 {
         return BLACK;
@@ -54,32 +55,40 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     }
 
     if let Some(shape) = closest_shape {
-        let mut direction: Vector3;
-        if scene.light.light_type == LightType::Directional {
-            direction = -scene.light.direction.normalize();
-        } else {
-            direction = (scene.light.location - shape.location()).normalize();
-        }
-        
-        let sray = Ray { origin: hit_point + direction * 0.1 , direction };
-        let mut shit_normal = Vector3::zero();
-        let mut shit_point = Vector3::zero();
+        for light in scene.lights.iter() {
+            let mut light_direction: Vector3;        
+            
+            if light.light_type == LightType::Directional {
+                light_direction = -light.direction.normalize();
+            } else {
+                light_direction = (light.location - hit_point).normalize();
+            }
+            
+            let sray = Ray { origin: hit_point + light_direction * 0.1 , direction: light_direction };
+            let mut shit_normal = Vector3::zero();
+            let mut shit_point = Vector3::zero();
 
-        if shape.intersect(&sray, &mut shit_normal, &mut shit_point) {
-            // shadow
-            color = BLACK;
-        }
-        else {
-            // light
-            color = shape.color() * scene.light.color;
-        }
+            if shape.intersect(&sray, &mut shit_normal, &mut shit_point) == false {
+                let lm = light_direction;
+                let n_dot_l = lm.normalize().dot(&hit_normal);
+                if n_dot_l > 0.0 {
+                    color = color + (shape.color() * n_dot_l as f32) * light.diffuse_color;
+                    let view = -hit_point.normalize();
+                    let reflected = reflection(lm, hit_normal);
+                    let dot = view.dot(&reflected);
+                    if dot > 0.0 {
+                        //color = color + dot as f32 * light.specular_color;
+                    }
+                }
+            }
 
-        let light_tuple = light_calculation(ray.direction, hit_normal, 1.0, shape.refractive_index());
-        // reflection
-        color = color + light_tuple.0 * trace(scene, Ray { origin: hit_point, direction: light_tuple.1 }, order + 1);
-        // refraction
-        if light_tuple.0 < 1.0 {
-            color = color + (1.0 - light_tuple.0) * trace(scene, Ray { origin: hit_point, direction: light_tuple.2 }, order + 1);
+            let light_tuple = light_calculation(ray.direction, hit_normal, 1.0, shape.refractive_index());
+            // reflection
+            color = color + light_tuple.0 * trace(scene, Ray { origin: hit_point, direction: light_tuple.1 }, order + 1);
+            // refraction
+            if light_tuple.0 < 1.0 {
+                color = color + (1.0 - light_tuple.0) * trace(scene, Ray { origin: hit_point, direction: light_tuple.2 }, order + 1);
+            }
         }
     }
     else {

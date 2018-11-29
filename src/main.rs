@@ -19,6 +19,23 @@ use math::vector::Vector3;
 use std::vec::Vec;
 
 fn main() {
+    let mut lights = Vec::<Light>::new();
+    lights.push(Light {
+            location: Vector3::zero(),
+            direction: Vector3{ x: -1.0, y: -1.0, z: 0.0 },
+            light_type: LightType::Directional,
+            diffuse_color: Color { r: 0.4, g: 0.4, b: 0.1, a: 1.0 },
+            specular_color: Color { r: 0.8, g: 0.8, b: 0.0, a: 1.0 },
+    });
+
+    lights.push(Light {
+            location: Vector3::zero(),
+            direction: Vector3{ x: 1.0, y: -2.0, z: 0.0 },
+            light_type: LightType::Directional,
+            diffuse_color: Color { r: 0.4, g: 0.3, b: 0.7, a: 1.0 },
+            specular_color: Color { r: 0.8, g: 0.1, b: 1.0, a: 1.0 },
+    });
+
     let mut shapes = Vec::<&Shape>::new();
     shapes.push(&Sphere{
             center: Vector3{
@@ -88,13 +105,8 @@ fn main() {
         width: 800,
         height: 600,
         fov: 90.0,
-        light: Light {
-            location: Vector3::zero(),
-            direction: Vector3{ x: -1.0, y: -1.0, z: 0.0 },
-            light_type: LightType::Directional,
-            color: Color { r: 0.4, g: 0.4, b: 0.1, a: 1.0 }
-        },
-        shapes
+        lights,
+        shapes,
     };
     let image = render(&scene);
     let r = image.save(std::path::Path::new(r#"./Render.png"#));
