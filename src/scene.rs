@@ -77,3 +77,38 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
 
     color
 }
+
+fn refraction(incident: Vector3, normal: Vector3, n1: f32, n2: f32, refracted_ray: &mut Vector3) -> bool {
+    let n = (n1 / n2) as f64;
+    let cos_i = -incident.dot(&normal);
+    let sin_t2 = n * n * (1.0 - cos_i * cos_i);
+    if sin_t2 > 1.0 {
+        // total infernal reflection
+        return false;
+    }
+    let cos_t = (1.0 - sin_t2).sqrt();
+
+    *refracted_ray = n * incident + (n * cos_i - cos_t) * normal;
+    true
+}
+
+fn reflection(incident: Vector3, normal: Vector3) -> Vector3
+{
+    let cos_i = -incident.dot(&normal);
+    incident + 2.0 * cos_i * normal
+}
+
+fn reflectance(incident: Vector3, normal: Vector3, n1: f32, n2: f32, refracted_ray: &mut Vector3) -> f32 {
+    let n = (n1 / n2) as f64;
+    let cos_i = -incident.dot(&normal);
+    let sin_t2 = n * n * (1.0 - cos_i * cos_i);
+    if sin_t2 > 1.0 {
+        // total infernal reflection
+        return 1.0;
+    }
+    let cos_t = (1.0 - sin_t2).sqrt();
+
+    let ortho = (n1 as f64 * cos_i - n2 as f64 * cos_t) / (n1 as f64 * cos_i + n2 as f64 * cos_t);
+    let parallel = (n2 as f64 * cos_i - n1 as f64 * cos_t) / (n2 as f64 * cos_i + n1 as f64 * cos_t);
+    ((ortho * ortho + parallel * parallel) / 2.0) as f32
+}

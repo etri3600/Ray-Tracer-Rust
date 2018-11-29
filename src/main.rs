@@ -33,6 +33,7 @@ fn main() {
                 b: 0.4,
                 a: 1.0
             },
+            refractive_index: 1.0
     });
 
     shapes.push(&Sphere{
@@ -48,6 +49,7 @@ fn main() {
                 b: 8.0,
                 a: 1.0
             },
+            refractive_index: 1.2
     });
 
     let scene = Scene {

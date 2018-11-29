@@ -10,6 +10,7 @@ pub trait Intersectable{
 pub trait Shape : Intersectable {
     fn location(&self) -> Vector3;
     fn color(&self) -> Color;
+    fn refractive_index(&self) -> f32;
 }
 
 #[derive(Deserialize)]
@@ -17,6 +18,7 @@ pub struct Sphere {
     pub center: Vector3,
     pub radius: f64,
     pub color: Color,
+    pub refractive_index: f32
 }
 
 impl Shape for Sphere{
@@ -26,18 +28,18 @@ impl Shape for Sphere{
     fn color(&self) -> Color {
         self.color
     }
+    fn refractive_index(&self) -> f32 {
+        self.refractive_index
+    }
 }
 
 impl Intersectable for Sphere{
     fn intersect(&self, ray: &Ray, normal: &mut Vector3, point: &mut Vector3) -> bool {
         let l = self.center - ray.origin;
         let tc = l.dot(&ray.direction);
-        if tc < 0.0 {
-            return false;
-        }
+        if tc < 0.0 { return false; }
+
         let sd = l.dot(&l) - tc * tc;
-
-
         if sd >= 0.0 {
             let td = (self.radius * self.radius - sd).sqrt();
             let t0 = tc - td;
@@ -46,8 +48,7 @@ impl Intersectable for Sphere{
                 if t0 > 0.0 { *point = ray.origin + t1 * ray.direction; }
                 else { *point = ray.origin + t1 * ray.direction; }
 
-                *normal = *point - self.center;
-                normal.normalize();
+                *normal = (*point - self.center).normalize();
 
                 true
             }
@@ -64,7 +65,6 @@ impl Intersectable for Sphere{
 #[cfg(test)]
 mod tests {
     use ::shape::*;
-    use ::point::Point;
     use ::color::Color;
     use ::math::vector::Vector3;
     use ::ray::Ray;
@@ -83,6 +83,7 @@ mod tests {
                 b: 0.4,
                 a: 1.0
             },
+            refractive_index: 1.0
         };
         
         let mut hit_normal = Vector3::zero();
@@ -111,6 +112,7 @@ pub struct Cube {
     pub color: Color,
     pub extent: Vector3,
     pub rotation: Quat,
+    pub refractive_index: f32,
 }
 
 impl Shape for Cube{
@@ -119,6 +121,9 @@ impl Shape for Cube{
     }
     fn color(&self) -> Color {
         self.color
+    }
+    fn refractive_index(&self) -> f32 {
+        self.refractive_index
     }
 }
 
