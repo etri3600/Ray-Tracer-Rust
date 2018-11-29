@@ -5,7 +5,6 @@ extern crate serde;
 
 mod scene;
 mod math;
-mod point;
 mod ray;
 mod shape;
 mod light;
@@ -13,7 +12,6 @@ mod color;
 
 use scene::*;
 use shape::*;
-use point::Point;
 use color::Color;
 use light::*;
 use math::vector::Vector3;
@@ -23,7 +21,7 @@ use std::vec::Vec;
 fn main() {
     let mut shapes = Vec::<&Shape>::new();
     shapes.push(&Sphere{
-            center: Point{
+            center: Vector3{
                 x: 0.0,
                 y: 0.0,
                 z: -5.0,
@@ -38,7 +36,7 @@ fn main() {
     });
 
     shapes.push(&Sphere{
-            center: Point{
+            center: Vector3{
                 x: 2.0,
                 y: 1.0,
                 z: -5.0,
@@ -57,7 +55,7 @@ fn main() {
         height: 600,
         fov: 90.0,
         light: Light {
-            location: Point::zero(),
+            location: Vector3::zero(),
             direction: Vector3{ x: -1.0, y: -1.0, z: 0.0 },
             light_type: LightType::Directional,
             color: Color { r: 0.4, g: 0.4, b: 0.1, a: 0.0 }

@@ -12,7 +12,8 @@
             "cwd": "${workspaceRoot}",
             "windows": {
                 "target": "${workspaceFolder}/target/debug/Ray-Tracer.exe"
-            }
+            },
+            "preLaunchTask": "cargo build"
         },
         {
             "name": "(Windows) Launch",
@@ -23,6 +24,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
+            "preLaunchTask": "cargo build"
         },
     ]
 }

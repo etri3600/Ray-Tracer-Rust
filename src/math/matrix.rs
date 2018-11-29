@@ -1,5 +1,4 @@
 use std::ops::{Mul, Index, IndexMut};
-use point::Point;
 use math::vector::Vector3;
 
 #[derive(Clone, Debug)]
@@ -171,25 +170,6 @@ impl Mul for Matrix {
             }
         }
         result
-    }
-}
-impl Mul<Point> for Matrix {
-    type Output = Point;
-
-    fn mul(self, other: Point) -> Point {
-        //Going to just ignore w for now.
-        Point {
-            x: other.x * self[0][0] + other.y * self[1][0] + other.z * self[2][0] + self[3][0],
-            y: other.x * self[0][1] + other.y * self[1][1] + other.z * self[2][1] + self[3][1],
-            z: other.x * self[0][2] + other.y * self[1][2] + other.z * self[2][2] + self[3][2],
-        }
-    }
-}
-impl Mul<Matrix> for Point {
-    type Output = Point;
-
-    fn mul(self, other: Matrix) -> Point {
-        other * self
     }
 }
 

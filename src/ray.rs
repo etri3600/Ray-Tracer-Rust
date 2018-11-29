@@ -1,9 +1,8 @@
 use scene::Scene;
-use point::Point;
 use math::vector::Vector3;
 
 pub struct Ray{
-    pub origin: Point,
+    pub origin: Vector3,
     pub direction: Vector3,
 }
 
@@ -16,7 +15,7 @@ impl Ray{
         let sensor_y = (1.0 - ((y as f64 + 0.5) / scene.height as f64) * 2.0) * fov_adjustment;
 
         Ray{
-            origin: Point::zero(),
+            origin: Vector3::zero(),
             direction: Vector3{
                 x: sensor_x,
                 y: sensor_y,

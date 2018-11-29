@@ -1,7 +1,6 @@
 use shape::Shape;
 use math::vector::Vector3;
-use point::Point;
-use light::Light;
+use light::*;
 use color::Color;
 
 use std::vec::Vec;
@@ -33,7 +32,7 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     let color: Color;
 
     let mut hit_normal = Vector3::zero();
-    let mut hit_point = Point::zero();
+    let mut hit_point = Vector3::zero();
 
     let mut min_distance = std::f64::INFINITY;
     let mut closest_shape: Option<&dyn Shape> = None;
@@ -50,10 +49,17 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     }
 
     if let Some(shape) = closest_shape {
-        let direction = (scene.light.location - shape.location()).normalize();
-        let sray = Ray { origin: shape.location() + direction * 0.1 , direction };
+        let mut direction: Vector3;
+        if scene.light.light_type == LightType::Directional {
+            direction = -scene.light.direction.normalize();
+        } else {
+            direction = (scene.light.location - shape.location()).normalize();
+        }
+        
+        let sray = Ray { origin: hit_point + direction * 0.1 , direction };
         let mut shit_normal = Vector3::zero();
-        let mut shit_point = Point::zero();
+        let mut shit_point = Vector3::zero();
+
         if shape.intersect(&sray, &mut shit_normal, &mut shit_point) {
             // shadow
             color = shape.color();

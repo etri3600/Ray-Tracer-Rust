@@ -19,10 +19,14 @@ impl Vector3 {
 
     pub fn length(&self) -> f64 {
         self.norm().sqrt()
-    }
+    }    
 
     pub fn norm(&self) -> f64 {
         (self.x * self.x + self.y * self.y + self.z * self.z)
+    }
+
+    pub fn size_squared(&self) -> f64 {
+        self.norm()
     }
 
     pub fn normalize(&self) -> Vector3 {
