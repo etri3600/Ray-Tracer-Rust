@@ -6,7 +6,7 @@ use math::clamp;
 
 use std::vec::Vec;
 
-use image::{DynamicImage, Rgba, GenericImage};
+use image::{DynamicImage, GenericImage};
 use ray::Ray;
 
 pub struct Scene {
@@ -87,7 +87,10 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
         }
     }
     else {
-        color = Color { r:0.2, g:0.2, b:0.2, a:1.0 };
+        if order == 0 {
+            // background
+            color = Color { r:0.2, g:0.2, b:0.2, a:1.0 };
+        }
     }
 
     color
