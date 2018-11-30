@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Mul, Neg};
+use std::ops::{Add, Sub, Mul, Neg, Div};
 use serde::{Deserialize, Deserializer};
 
 #[derive(Copy, Clone, Debug, Deserialize)]
@@ -110,6 +110,18 @@ impl Mul<Vector3> for f64 {
 
     fn mul(self, other: Vector3) -> Vector3 {
         other * self
+    }
+}
+
+impl Div<f64> for Vector3 {
+    type Output = Vector3;
+
+    fn div(self, other: f64) -> Vector3 {
+        Vector3 {
+            x: self.x / other,
+            y: self.y / other,
+            z: self.z / other,
+        }
     }
 }
 
