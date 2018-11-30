@@ -1,6 +1,7 @@
 use math::vector::*;
 use color::Color;
 use math::*;
+use shape::Shape;
 
 #[derive(PartialEq)]
 pub enum LightType {
@@ -16,7 +17,7 @@ pub struct Light {
     pub specular_color: Color,
 }
 
-pub fn blinn_phong(light: &Light, pos: Vector3, view: Vector3, normal: Vector3) -> (Color, Color) {    
+pub fn blinn_phong(shape: &dyn Shape, light: &Light, pos: Vector3, view: Vector3, normal: Vector3) -> (Color, Color) {    
     let mut light_dir;
     let mut distance;
     if light.light_type == LightType::Directional {
@@ -32,13 +33,13 @@ pub fn blinn_phong(light: &Light, pos: Vector3, view: Vector3, normal: Vector3) 
     let n_dot_l = normal.dot(&light_dir);
     let diffuse_intensity = clamp(n_dot_l, 0.0, 1.0);
 
-    let diffuse = diffuse_intensity as f32 * light.diffuse_color * (1.0/* diffuse power */ / distance) as f32;
+    let diffuse = shape.color() * diffuse_intensity as f32 * light.diffuse_color * (1.0/* diffuse power */ / distance) as f32;
 
-    let half = (light_dir + view).normalize();
+    let half = (light_dir + view.normalize()).normalize();
     let n_dot_h = half.dot(&normal);
     let specular_intensity = clamp(n_dot_h, 0.0, 1.0).powf(4.0/* specular hardness */);
 
-    let specular = specular_intensity as f32 * light.specular_color * (1.0/* specular power */ / distance) as f32;
+    let specular = shape.color() * specular_intensity as f32 * light.specular_color * (1.0/* specular power */ / distance) as f32;
 
     (diffuse, specular)
 }

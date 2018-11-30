@@ -33,7 +33,7 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     const BLACK: Color = Color { r:0.0, g:0.0, b:0.0, a:1.0 };
     let mut color: Color = BLACK;
 
-    if order > 1 {
+    if order > 2 {
         return BLACK;
     }
 
@@ -45,11 +45,15 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
 
     // find intersect
     for shape in scene.shapes.iter() {
-        if shape.intersect(&ray, &mut hit_normal, &mut hit_point) {
-            let distance = hit_point.size_squared();
+        let mut normal = Vector3::zero();
+        let mut point = Vector3::zero();
+        if shape.intersect(&ray, &mut normal, &mut point) {
+            let distance = point.size_squared();
             if distance < min_distance {
                 min_distance = distance;
                 closest_shape = Some(*shape);
+                hit_normal = normal;
+                hit_point = point;
             }
         }
     }
@@ -69,7 +73,7 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
             let mut shit_point = Vector3::zero();
 
             if shape.intersect(&sray, &mut shit_normal, &mut shit_point) == false {
-                let (diffuse, specular) = blinn_phong(light, hit_point, Vector3 {x: 0.0, y: 0.0, z: -1.0}, hit_normal); 
+                let (diffuse, specular) = blinn_phong(shape, light, hit_point, Vector3::zero() - hit_point, hit_normal); 
                 color = color + diffuse + specular;
             }
         }
@@ -151,5 +155,5 @@ fn light_calculation(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> (f
     
     let reflection_ray = incident + 2.0 * cos_i * normal;
 
-    (reflectance, reflection_ray, refraction_ray)
+    (reflectance, reflection_ray.normalize(), refraction_ray.normalize())
 }
