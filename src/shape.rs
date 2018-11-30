@@ -45,8 +45,12 @@ impl Intersectable for Sphere{
             let t0 = tc - td;
             let t1 = tc + td;
             if t0 > 0.0 || t1 > 0.0 {
-                if t0 > 0.0 { *point = ray.origin + t1 * ray.direction; }
-                else { *point = ray.origin + t1 * ray.direction; }
+                if t0 > 0.0 { 
+                    *point = ray.origin + t0 * ray.direction; 
+                }
+                else { 
+                    *point = ray.origin + t1 * ray.direction; 
+                }
 
                 *normal = (*point - self.center).normalize();
 
@@ -103,6 +107,11 @@ mod tests {
 
         ray = Ray { origin: Vector3 { x:0.0, y:1.0, z:-5.0 }, direction: Vector3 { x:0.0, y:1.0, z:0.0 }};
         assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), false);
+
+        ray = Ray { origin: Vector3 { x:0.0, y:0.0, z:0.0 }, direction: Vector3 { x:0.0, y:0.0, z:-1.0 }};
+        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), true);
+
+        println!("{:?}, {:?}", hit_normal, hit_point);
     }
 }
 
