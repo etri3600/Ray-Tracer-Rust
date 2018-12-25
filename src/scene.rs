@@ -31,9 +31,10 @@ pub fn render(scene: &Scene) -> DynamicImage{
 
 pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     const BLACK: Color = Color { r:0.0, g:0.0, b:0.0, a:1.0 };
+    const BACK_GROUND: Color = Color { r:0.2, g:0.2, b:0.2, a:1.0 };
     let mut color: Color = BLACK;
 
-    if order > 2 {
+    if order > 5 {
         return BLACK;
     }
 
@@ -43,11 +44,14 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     let mut min_distance = std::f64::INFINITY;
     let mut closest_shape: Option<&dyn Shape> = None;
 
+    let mut intersect_count = 0;
+
     // find intersect
     for shape in scene.shapes.iter() {
         let mut normal = Vector3::zero();
         let mut point = Vector3::zero();
-        if shape.intersect(&ray, &mut normal, &mut point) {
+        intersect_count = shape.intersect(&ray, &mut normal, &mut point);
+        if intersect_count > 0 {
             let distance = point.size_squared();
             if distance < min_distance {
                 min_distance = distance;
@@ -72,13 +76,19 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
             let mut shit_normal = Vector3::zero();
             let mut shit_point = Vector3::zero();
 
-            if shape.intersect(&sray, &mut shit_normal, &mut shit_point) == false {
+            if shape.intersect(&sray, &mut shit_normal, &mut shit_point) == 0 {
                 let (diffuse, specular) = blinn_phong(shape, light, hit_point, Vector3::zero() - hit_point, hit_normal); 
                 color = color + diffuse + specular;
             }
         }
 
-        let (reflectance, reflection_ray, refraction_ray) = light_calculation(ray.direction, hit_normal, 1.0, shape.refractive_index());
+        let mut n1 = 1.0;
+        let mut n2 = shape.refractive_index();
+        if intersect_count == 1 {
+            n1 = n2;
+            n2 = 1.0;
+        }
+        let (reflectance, reflection_ray, refraction_ray) = light_calculation(ray.direction, hit_normal, n1, n2);
         // reflection
         color = color + reflectance * trace(scene, Ray { origin: hit_point, direction: reflection_ray }, order + 1);
         // refraction
@@ -89,7 +99,7 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     else {
         if order == 0 {
             // background
-            color = Color { r:0.2, g:0.2, b:0.2, a:1.0 };
+            color = color + BACK_GROUND;
         }
     }
 

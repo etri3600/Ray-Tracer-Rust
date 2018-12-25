@@ -103,7 +103,7 @@ fn main() {
 
     let scene = Scene {
         width: 1280,
-        height: 1024,
+        height: 720,
         fov: 90.0,
         lights,
         shapes,

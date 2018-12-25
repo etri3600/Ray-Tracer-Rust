@@ -4,7 +4,7 @@ use ray::Ray;
 use color::Color;
 
 pub trait Intersectable{
-    fn intersect(&self, ray: &Ray, normal: &mut Vector3, point: &mut Vector3) -> bool;
+    fn intersect(&self, ray: &Ray, normal: &mut Vector3, point: &mut Vector3) -> u8;
 }
 
 pub trait Shape : Intersectable {
@@ -34,10 +34,10 @@ impl Shape for Sphere{
 }
 
 impl Intersectable for Sphere{
-    fn intersect(&self, ray: &Ray, normal: &mut Vector3, point: &mut Vector3) -> bool {
+    fn intersect(&self, ray: &Ray, normal: &mut Vector3, point: &mut Vector3) -> u8 {
         let l = self.center - ray.origin;
         let tc = l.dot(&ray.direction);
-        if tc < 0.0 { return false; }
+        if tc < 0.0 { return 0; }
 
         let sd = l.dot(&l) - tc * tc;
         if sd >= 0.0 {
@@ -54,14 +54,14 @@ impl Intersectable for Sphere{
 
                 *normal = (*point - self.center).normalize();
 
-                true
+                if t0 > 0.0 && t1 > 0.0 { 2 } else { 1 }
             }
             else {
-                false
+                0
             }
         }
         else {
-            false
+            0
         }
     }
 }
@@ -94,22 +94,22 @@ mod tests {
         let mut hit_point = Vector3::zero();
 
         let mut ray = Ray { origin: Vector3::zero(), direction: Vector3 { x:0.0, y:1.0, z:0.0 }};
-        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), false);
+        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), 0);
 
         ray = Ray { origin: Vector3::zero(), direction: Vector3 { x:0.0, y:0.0, z:-1.0 }};
-        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), true);
+        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point) > 0, true);
 
         ray = Ray { origin: Vector3 { x:0.0, y:0.0, z:-5.0 }, direction: Vector3 { x:0.0, y:1.0, z:0.0 }};
-        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), true);
+        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point) > 0, true);
 
         ray = Ray { origin: Vector3 { x:0.0, y:-1.0, z:-5.0 }, direction: Vector3 { x:0.0, y:1.0, z:0.0 }};
-        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), true);
+        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point) > 0, true);
 
         ray = Ray { origin: Vector3 { x:0.0, y:1.0, z:-5.0 }, direction: Vector3 { x:0.0, y:1.0, z:0.0 }};
-        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), false);
+        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), 0);
 
         ray = Ray { origin: Vector3 { x:0.0, y:0.0, z:0.0 }, direction: Vector3 { x:0.0, y:0.0, z:-1.0 }};
-        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point), true);
+        assert_eq!(sphere.intersect(&ray, &mut hit_normal, &mut hit_point) > 0, true);
 
         println!("{:?}, {:?}", hit_normal, hit_point);
     }
@@ -137,9 +137,9 @@ impl Shape for Cube{
 }
 
 impl Intersectable for Cube{
-    fn intersect(&self, ray: &Ray, normal: &mut Vector3, point: &mut Vector3) -> bool {
+    fn intersect(&self, ray: &Ray, normal: &mut Vector3, point: &mut Vector3) -> u8 {
         let l: Vector3 = self.location - ray.origin;
         
-        false
+        0
     }
 }
