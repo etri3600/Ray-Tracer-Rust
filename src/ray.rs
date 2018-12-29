@@ -1,6 +1,8 @@
 use scene::Scene;
 use math::vector::Vector3;
 
+#[derive(Copy, Clone, Debug, Deserialize)]
+#[repr(C)]
 pub struct Ray{
     pub origin: Vector3,
     pub direction: Vector3,

@@ -29,15 +29,7 @@ pub fn render(scene: &Scene) -> DynamicImage{
     image
 }
 
-pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
-    const BLACK: Color = Color { r:0.0, g:0.0, b:0.0, a:1.0 };
-    const BACK_GROUND: Color = Color { r:0.2, g:0.2, b:0.2, a:1.0 };
-    let mut color: Color = BLACK;
-
-    if order > 5 {
-        return BLACK;
-    }
-
+pub fn ray_casting(scene: &Scene, ray: Ray) -> (Option<&dyn Shape>, Vector3, Vector3, u8) {
     let mut hit_normal = Vector3::zero();
     let mut hit_point = Vector3::zero();
 
@@ -46,7 +38,6 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
 
     let mut intersect_count = 0;
 
-    // find intersect
     for shape in scene.shapes.iter() {
         let mut normal = Vector3::zero();
         let mut point = Vector3::zero();
@@ -62,6 +53,21 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
         }
     }
 
+    (closest_shape, hit_point, hit_normal, intersect_count)
+}
+
+pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
+    const BLACK: Color = Color { r:0.0, g:0.0, b:0.0, a:1.0 };
+    const BACK_GROUND: Color = Color { r:0.2, g:0.2, b:0.2, a:1.0 };
+    let mut color: Color = BLACK;
+
+    if order > 5 {
+        return BLACK;
+    }
+
+    // find intersect
+    let (closest_shape, hit_point, hit_normal, intersect_count) = ray_casting(scene, ray);
+
     if let Some(shape) = closest_shape {
         for light in scene.lights.iter() {
             let mut light_direction: Vector3;        
@@ -73,10 +79,10 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
             }
             
             let sray = Ray { origin: hit_point + light_direction * 0.1 , direction: light_direction };
-            let mut shit_normal = Vector3::zero();
-            let mut shit_point = Vector3::zero();
 
-            if shape.intersect(&sray, &mut shit_normal, &mut shit_point) == 0 {
+            let shadow_ray_result = ray_casting(scene, sray);
+
+            if shadow_ray_result.0.is_none() {
                 let (diffuse, specular) = blinn_phong(shape, light, hit_point, Vector3::zero() - hit_point, hit_normal); 
                 color = color + diffuse + specular;
             }
@@ -98,8 +104,7 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     }
     else {
         if order == 0 {
-            // background
-            color = color + BACK_GROUND;
+            color = BACK_GROUND;
         }
     }
 

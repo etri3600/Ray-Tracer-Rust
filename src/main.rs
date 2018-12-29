@@ -101,6 +101,22 @@ fn main() {
             refractive_index: 1.5
     });
 
+    shapes.push(&Sphere{
+            center: Vector3{
+                x: -8.5,
+                y: 5.0,
+                z: -5.0,
+            },
+            radius: 0.5,
+            color: Color{
+                r: 0.3,
+                g: 0.3,
+                b: 0.3,
+                a: 1.0
+            },
+            refractive_index: 1.0
+    });
+
     let scene = Scene {
         width: 1280,
         height: 720,
