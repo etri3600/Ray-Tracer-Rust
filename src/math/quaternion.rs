@@ -3,14 +3,14 @@ use math::vector::Vector3;
 #[derive(Copy, Clone, Debug, Deserialize)]
 #[repr(C)]
 pub struct Quat {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
-    pub w: f64
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub w: f32
 }
 
 impl Quat {
-    pub fn new(x: f64, y: f64, z: f64, w: f64) -> Quat {
+    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Quat {
         Quat { x, y, z, w }
     }
 

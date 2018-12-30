@@ -17,7 +17,7 @@ pub trait Shape : Intersectable {
 #[derive(Deserialize)]
 pub struct Sphere {
     pub center: Vector3,
-    pub radius: f64,
+    pub radius: f32,
     pub color: Color,
     pub refractive_index: f32
 }

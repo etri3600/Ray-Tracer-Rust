@@ -3,7 +3,7 @@ use math::vector::Vector3;
 
 #[derive(Clone, Debug)]
 pub struct Matrix {
-    elements: [[f64; 4]; 4],
+    elements: [[f32; 4]; 4],
 }
 impl Matrix {
     pub fn identity() -> Matrix {
@@ -15,11 +15,11 @@ impl Matrix {
         }
     }
 
-    pub fn scale_linear(s: f64) -> Matrix {
+    pub fn scale_linear(s: f32) -> Matrix {
         Matrix::scale(s, s, s)
     }
 
-    pub fn scale(sx: f64, sy: f64, sz: f64) -> Matrix {
+    pub fn scale(sx: f32, sy: f32, sz: f32) -> Matrix {
         Matrix {
             elements: [[ sx, 0.0, 0.0, 0.0],
                        [0.0,  sy, 0.0, 0.0],
@@ -28,7 +28,7 @@ impl Matrix {
         }
     }
 
-    pub fn rotate_x(t: f64) -> Matrix {
+    pub fn rotate_x(t: f32) -> Matrix {
         let sin = t.sin();
         let cos = t.cos();
         Matrix {
@@ -39,7 +39,7 @@ impl Matrix {
         }
     }
 
-    pub fn rotate_y(t: f64) -> Matrix {
+    pub fn rotate_y(t: f32) -> Matrix {
         let sin = t.sin();
         let cos = t.cos();
         Matrix {
@@ -50,7 +50,7 @@ impl Matrix {
         }
     }
 
-    pub fn rotate_z(t: f64) -> Matrix {
+    pub fn rotate_z(t: f32) -> Matrix {
         let sin = t.sin();
         let cos = t.cos();
         Matrix {
@@ -61,7 +61,7 @@ impl Matrix {
         }
     }
 
-    pub fn translate(tx: f64, ty:f64, tz: f64) -> Matrix {
+    pub fn translate(tx: f32, ty:f32, tz: f32) -> Matrix {
         Matrix {
             elements: [[0.0, 0.0, 0.0,  tx],
                        [0.0, 0.0, 0.0,  ty],
@@ -90,7 +90,7 @@ impl Matrix {
             }
             if pivot != i {
                 for j in 0..4 {
-                    let mut tmp: f64;
+                    let mut tmp: f32;
 
                     tmp = t[i][j];
                     t[i][j] = t[pivot][j];
@@ -112,7 +112,7 @@ impl Matrix {
         }
         // Backward substitution
         for i in (0..4).rev() {
-            let mut f: f64 = t[i][i];
+            let mut f: f32 = t[i][i];
 
             if f == 0.0 {
                 // Cannot invert singular matrix
@@ -138,14 +138,14 @@ impl Matrix {
     }
 }
 impl Index<usize> for Matrix {
-    type Output = [f64; 4];
+    type Output = [f32; 4];
 
-    fn index(&self, idx: usize) -> &[f64; 4] {
+    fn index(&self, idx: usize) -> &[f32; 4] {
         &self.elements[idx]
     }
 }
 impl IndexMut<usize> for Matrix {
-    fn index_mut(&mut self, idx: usize) -> &mut [f64; 4] {
+    fn index_mut(&mut self, idx: usize) -> &mut [f32; 4] {
         &mut self.elements[idx]
     }
 }

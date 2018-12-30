@@ -12,7 +12,7 @@ use ray::Ray;
 pub struct Scene {
     pub width: u32,
     pub height: u32,
-    pub fov: f64,
+    pub fov: f32,
     pub lights: Vec<Light>,
     pub shapes: Vec<&'static dyn Shape>,
 }
@@ -33,7 +33,7 @@ pub fn ray_casting(scene: &Scene, ray: Ray) -> (Option<&dyn Shape>, Vector3, Vec
     let mut hit_normal = Vector3::zero();
     let mut hit_point = Vector3::zero();
 
-    let mut min_distance = std::f64::INFINITY;
+    let mut min_distance = std::f32::INFINITY;
     let mut closest_shape: Option<&dyn Shape> = None;
 
     let mut intersect_count = 0;
@@ -112,7 +112,7 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
 
 #[allow(dead_code)]
 fn refraction(incident: Vector3, normal: Vector3, n1: f32, n2: f32, refracted_ray: &mut Vector3) -> bool {
-    let n = f64::from(n1 / n2);
+    let n = n1 / n2;
     let cos_i = -incident.dot(&normal);
     let sin_t2 = n * n * (1.0 - cos_i * cos_i);
     if sin_t2 > 1.0 {
@@ -134,7 +134,7 @@ fn reflection(incident: Vector3, normal: Vector3) -> Vector3
 
 #[allow(dead_code)]
 fn fresnel(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> f32 {
-    let n = f64::from(n1 / n2);
+    let n = n1 / n2;
     let mut cos_i = -incident.dot(&normal);
 
     let sin_t2 = n * n * (1.0 - cos_i * cos_i).max(0.0);
@@ -145,8 +145,8 @@ fn fresnel(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> f32 {
     let cos_t = (1.0 - sin_t2).sqrt();
     cos_i = cos_i.abs();
     
-    let rs = ((f64::from(n2) * cos_i) - (f64::from(n1) * cos_t)) / ((f64::from(n2) * cos_i) + (f64::from(n1) * cos_t));
-    let rp = ((f64::from(n1) * cos_i) - (f64::from(n2) * cos_t)) / ((f64::from(n1) * cos_i) + (f64::from(n2) * cos_t));
+    let rs = ((n2 * cos_i) - (n1 * cos_t)) / ((n2 * cos_i) + (n1 * cos_t));
+    let rp = ((n1 * cos_i) - (n2 * cos_t)) / ((n1 * cos_i) + (n2 * cos_t));
 
     ((rs * rs + rp * rp) / 2.0) as f32
 }
@@ -155,7 +155,7 @@ fn light_calculation(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> (f
     let reflectance;
     let mut refraction_ray = Vector3::zero();
     
-    let n = f64::from(n1 / n2);
+    let n = n1 / n2;
     let cos_i = -incident.dot(&normal);
     let sin_t2 = n * n * (1.0 - cos_i * cos_i).max(0.0);
     if sin_t2 > 1.0 {
@@ -166,8 +166,8 @@ fn light_calculation(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> (f
         let cos_t = (1.0 - sin_t2).sqrt();
         let cos_i_abs = cos_i.abs();
         
-        let ortho = (f64::from(n1) * cos_i_abs - f64::from(n2) * cos_t) / (f64::from(n1) * cos_i_abs + f64::from(n2) * cos_t);
-        let parallel = (f64::from(n2) * cos_i_abs - f64::from(n1) * cos_t) / (f64::from(n2) * cos_i_abs + f64::from(n1) * cos_t);
+        let ortho = (n1 * cos_i_abs - n2 * cos_t) / (n1 * cos_i_abs + n2 * cos_t);
+        let parallel = (n2 * cos_i_abs - n1 * cos_t) / (n2 * cos_i_abs + n1 * cos_t);
 
         reflectance = clamp(((ortho * ortho + parallel * parallel) / 2.0) as f32, 0.0, 1.0);
         refraction_ray = n * incident + (n * cos_i - cos_t) * normal;
