@@ -37,6 +37,7 @@ impl Quat {
         self
     }
 
+    #[allow(clippy::let_and_return)]
     pub fn rotate(&self, vec: Vector3) -> Vector3 {
         let q = Vector3 { x: self.x, y: self.y, z: self.z };
         let t = 2.0 * q.cross(&vec);

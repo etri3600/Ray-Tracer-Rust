@@ -32,10 +32,10 @@ impl Color{
 
     pub fn from_rgba(rgba: Rgba<u8>) -> Color {
         Color {
-            r: gamma_decode((rgba.data[0] as f32) / 255.0),
-            g: gamma_decode((rgba.data[1] as f32) / 255.0),
-            b: gamma_decode((rgba.data[2] as f32) / 255.0),
-            a: gamma_decode((rgba.data[3] as f32) / 255.0)
+            r: gamma_decode(f32::from(rgba.data[0]) / 255.0),
+            g: gamma_decode(f32::from(rgba.data[1]) / 255.0),
+            b: gamma_decode(f32::from(rgba.data[2]) / 255.0),
+            a: gamma_decode(f32::from(rgba.data[3]) / 255.0)
         }
     }
 }

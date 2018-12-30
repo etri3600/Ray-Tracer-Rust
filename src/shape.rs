@@ -46,7 +46,7 @@ impl Intersectable for Sphere{
             let t0 = tc - td;
             let t1 = tc + td;
             if t0 > 0.0 || t1 > 0.0 {
-                if t0.is_nearly_zero() == false { 
+                if !t0.is_nearly_zero() { 
                     *point = ray.origin + t0 * ray.direction; 
                 }
                 else { 

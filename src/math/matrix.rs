@@ -6,7 +6,6 @@ pub struct Matrix {
     elements: [[f64; 4]; 4],
 }
 impl Matrix {
-    #[cfg_attr(rustfmt, rustfmt_skip)]
     pub fn identity() -> Matrix {
         Matrix {
             elements: [[1.0, 0.0, 0.0, 0.0],
@@ -20,7 +19,6 @@ impl Matrix {
         Matrix::scale(s, s, s)
     }
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
     pub fn scale(sx: f64, sy: f64, sz: f64) -> Matrix {
         Matrix {
             elements: [[ sx, 0.0, 0.0, 0.0],
@@ -30,7 +28,6 @@ impl Matrix {
         }
     }
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
     pub fn rotate_x(t: f64) -> Matrix {
         let sin = t.sin();
         let cos = t.cos();
@@ -42,7 +39,6 @@ impl Matrix {
         }
     }
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
     pub fn rotate_y(t: f64) -> Matrix {
         let sin = t.sin();
         let cos = t.cos();
@@ -54,7 +50,6 @@ impl Matrix {
         }
     }
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
     pub fn rotate_z(t: f64) -> Matrix {
         let sin = t.sin();
         let cos = t.cos();
@@ -66,7 +61,6 @@ impl Matrix {
         }
     }
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
     pub fn translate(tx: f64, ty:f64, tz: f64) -> Matrix {
         Matrix {
             elements: [[0.0, 0.0, 0.0,  tx],
@@ -82,16 +76,16 @@ impl Matrix {
         // Forward elimination
         for i in 0..3 {
             let mut pivot = i;
-            let mut pivotsize = t[i][i].abs();
+            let mut pivot_size = t[i][i].abs();
             for j in (i + 1)..4 {
                 let tmp = t[j][i].abs();
-                if tmp > pivotsize {
+                if tmp > pivot_size {
                     pivot = j;
-                    pivotsize = tmp;
+                    pivot_size = tmp;
                 }
             }
 
-            if pivotsize == 0.0 {
+            if pivot_size == 0.0 {
                 return Matrix::identity();
             }
             if pivot != i {
@@ -140,7 +134,7 @@ impl Matrix {
             }
         }
 
-        return s;
+        s
     }
 }
 impl Index<usize> for Matrix {
@@ -158,7 +152,6 @@ impl IndexMut<usize> for Matrix {
 impl Mul for Matrix {
     type Output = Matrix;
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
     fn mul(self, other: Matrix) -> Matrix {
         let mut result = Matrix::identity();
         for i in 0..4 {

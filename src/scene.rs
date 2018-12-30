@@ -70,13 +70,12 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
 
     if let Some(shape) = closest_shape {
         for light in scene.lights.iter() {
-            let mut light_direction: Vector3;        
-            
-            if light.light_type == LightType::Directional {
-                light_direction = -light.direction.normalize();
-            } else {
-                light_direction = (light.location - hit_point).normalize();
-            }
+            let light_direction = 
+                if light.light_type == LightType::Directional {
+                    -light.direction.normalize()
+                } else {
+                    (light.location - hit_point).normalize()
+                };
             
             let sray = Ray { origin: hit_point + light_direction * 0.1 , direction: light_direction };
 
@@ -111,8 +110,9 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
     color
 }
 
+#[allow(dead_code)]
 fn refraction(incident: Vector3, normal: Vector3, n1: f32, n2: f32, refracted_ray: &mut Vector3) -> bool {
-    let n = (n1 / n2) as f64;
+    let n = f64::from(n1 / n2);
     let cos_i = -incident.dot(&normal);
     let sin_t2 = n * n * (1.0 - cos_i * cos_i);
     if sin_t2 > 1.0 {
@@ -125,14 +125,16 @@ fn refraction(incident: Vector3, normal: Vector3, n1: f32, n2: f32, refracted_ra
     true
 }
 
+#[allow(dead_code)]
 fn reflection(incident: Vector3, normal: Vector3) -> Vector3
 {
     let cos_i = -incident.dot(&normal);
     incident + 2.0 * cos_i * normal
 }
 
+#[allow(dead_code)]
 fn fresnel(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> f32 {
-    let n = (n1 / n2) as f64;
+    let n = f64::from(n1 / n2);
     let mut cos_i = -incident.dot(&normal);
 
     let sin_t2 = n * n * (1.0 - cos_i * cos_i).max(0.0);
@@ -143,8 +145,8 @@ fn fresnel(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> f32 {
     let cos_t = (1.0 - sin_t2).sqrt();
     cos_i = cos_i.abs();
     
-    let rs = ((n2 as f64 * cos_i) - (n1 as f64 * cos_t)) / ((n2 as f64 * cos_i) + (n1 as f64 * cos_t));
-    let rp = ((n1 as f64 * cos_i) - (n2 as f64 * cos_t)) / ((n1 as f64 * cos_i) + (n2 as f64 * cos_t));
+    let rs = ((f64::from(n2) * cos_i) - (f64::from(n1) * cos_t)) / ((f64::from(n2) * cos_i) + (f64::from(n1) * cos_t));
+    let rp = ((f64::from(n1) * cos_i) - (f64::from(n2) * cos_t)) / ((f64::from(n1) * cos_i) + (f64::from(n2) * cos_t));
 
     ((rs * rs + rp * rp) / 2.0) as f32
 }
@@ -153,7 +155,7 @@ fn light_calculation(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> (f
     let reflectance;
     let mut refraction_ray = Vector3::zero();
     
-    let n = (n1 / n2) as f64;
+    let n = f64::from(n1 / n2);
     let cos_i = -incident.dot(&normal);
     let sin_t2 = n * n * (1.0 - cos_i * cos_i).max(0.0);
     if sin_t2 > 1.0 {
@@ -164,8 +166,8 @@ fn light_calculation(incident: Vector3, normal: Vector3, n1: f32, n2: f32) -> (f
         let cos_t = (1.0 - sin_t2).sqrt();
         let cos_i_abs = cos_i.abs();
         
-        let ortho = (n1 as f64 * cos_i_abs - n2 as f64 * cos_t) / (n1 as f64 * cos_i_abs + n2 as f64 * cos_t);
-        let parallel = (n2 as f64 * cos_i_abs - n1 as f64 * cos_t) / (n2 as f64 * cos_i_abs + n1 as f64 * cos_t);
+        let ortho = (f64::from(n1) * cos_i_abs - f64::from(n2) * cos_t) / (f64::from(n1) * cos_i_abs + f64::from(n2) * cos_t);
+        let parallel = (f64::from(n2) * cos_i_abs - f64::from(n1) * cos_t) / (f64::from(n2) * cos_i_abs + f64::from(n1) * cos_t);
 
         reflectance = clamp(((ortho * ortho + parallel * parallel) / 2.0) as f32, 0.0, 1.0);
         refraction_ray = n * incident + (n * cos_i - cos_t) * normal;
