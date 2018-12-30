@@ -1,3 +1,4 @@
+use std::arch::x86_64::*;
 use std::ops::{Mul, Index, IndexMut};
 use math::vector::Vector3;
 
@@ -154,12 +155,28 @@ impl Mul for Matrix {
 
     fn mul(self, other: Matrix) -> Matrix {
         let mut result = Matrix::identity();
-        for i in 0..4 {
-            for j in 0..4 {
-                result[i][j] = self[i][0] * other[0][j] +
-                               self[i][1] * other[1][j] +
-                               self[i][2] * other[2][j] +
-                               self[i][3] * other[3][j];
+        
+        if cfg!(all(target_arch = "x86_64", target_feature = "sse2"))
+        {
+            unsafe {
+                for i in 0..4 {
+                    let mut r = _mm_mul_ps(_mm_broadcast_ss(&self[i][0]), _mm_loadu_ps(&other[0] as *const f32));
+                    r = _mm_add_ps(r, _mm_mul_ps(_mm_broadcast_ss(&self[i][1]), _mm_loadu_ps(&other[1] as *const f32)));
+                    r = _mm_add_ps(r, _mm_mul_ps(_mm_broadcast_ss(&self[i][2]), _mm_loadu_ps(&other[2] as *const f32)));
+                    r = _mm_add_ps(r, _mm_mul_ps(_mm_broadcast_ss(&self[i][3]), _mm_loadu_ps(&other[3] as *const f32)));
+
+                    _mm_storeu_ps(&mut result[i][0] as *mut f32, r);
+                }
+            }
+        }
+        else {
+            for i in 0..4 {
+                for j in 0..4 {
+                    result[i][j] = self[i][0] * other[0][j] +
+                                self[i][1] * other[1][j] +
+                                self[i][2] * other[2][j] +
+                                self[i][3] * other[3][j];
+                }
             }
         }
         result
@@ -175,5 +192,18 @@ impl Mul<Vector3> for Matrix {
             y: other.x * self[0][1] + other.y * self[1][1] + other.z * self[2][1],
             z: other.x * self[0][2] + other.y * self[1][2] + other.z * self[2][2],
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn internal() {
+        let (m1, m2) = (Matrix::scale(1.0, 1.4, 2.1), Matrix::identity());
+        let m3 = m1 * m2;
+        println!("{:?}", m3);
+        assert_eq!(1, 1);
     }
 }
