@@ -1,6 +1,6 @@
 use std::arch::x86_64::*;
 use std::ops::{Mul, Index, IndexMut};
-use math::vector::Vector3;
+use math::vector::*;
 
 #[derive(Clone, Debug)]
 pub struct Matrix {
@@ -16,7 +16,16 @@ impl Matrix {
         }
     }
 
-    pub fn scale_linear(s: f32) -> Matrix {
+    pub fn from_vector(v0: Vector4, v1: Vector4, v2: Vector4, v3: Vector4) -> Matrix {
+        Matrix {
+            elements: [[v0.x, v0.y, v0.z, v0.w],
+                       [v1.x, v1.y, v1.z, v1.w],
+                       [v2.x, v2.y, v2.z, v2.w],
+                       [v3.x, v3.y, v3.z, v3.w]]
+        }        
+    }
+
+    pub fn scale_uniform(s: f32) -> Matrix {
         Matrix::scale(s, s, s)
     }
 
@@ -67,7 +76,7 @@ impl Matrix {
             elements: [[0.0, 0.0, 0.0,  tx],
                        [0.0, 0.0, 0.0,  ty],
                        [0.0, 0.0, 0.0,  tz],
-                       [0.0, 0.0, 0.0, 0.0]],
+                       [0.0, 0.0, 0.0, 1.0]],
         }
     }
 
@@ -150,13 +159,26 @@ impl IndexMut<usize> for Matrix {
         &mut self.elements[idx]
     }
 }
+impl PartialEq for Matrix {
+    fn eq(&self, other: &Matrix) -> bool {
+        for x in 0..4 {
+            for y in 0..4 {
+                if self[x][y] != other[x][y] {
+                    return false;
+                }
+            }
+        }
+
+        true
+    }
+}
 impl Mul for Matrix {
     type Output = Matrix;
 
     fn mul(self, other: Matrix) -> Matrix {
         let mut result = Matrix::identity();
         
-        if cfg!(all(target_arch = "x86_64", target_feature = "sse2"))
+        if is_x86_feature_detected!("avx2")
         {
             unsafe {
                 for i in 0..4 {
@@ -201,9 +223,15 @@ mod tests {
 
     #[test]
     fn internal() {
-        let (m1, m2) = (Matrix::scale(1.0, 1.4, 2.1), Matrix::identity());
+        let m1 = Matrix {
+            elements: [[0.0, 1.0, 0.0, 0.0],
+                       [1.0, 0.0, 2.0, 0.0],
+                       [2.0, 0.0, 1.0, 0.0],
+                       [0.0, 0.0, 0.0, 1.0]]
+        };
+        let m2 = m1.inverse();
         let m3 = m1 * m2;
         println!("{:?}", m3);
-        assert_eq!(1, 1);
+        assert_eq!(m3, Matrix::identity());
     }
 }
