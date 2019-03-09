@@ -9,6 +9,7 @@ pub struct Quat {
     pub w: f32
 }
 
+#[allow(dead_code)]
 impl Quat {
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Quat {
         Quat { x, y, z, w }

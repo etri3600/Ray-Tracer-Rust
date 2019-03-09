@@ -6,6 +6,8 @@ use math::vector::*;
 pub struct Matrix {
     elements: [[f32; 4]; 4],
 }
+
+#[allow(dead_code)]
 impl Matrix {
     pub fn identity() -> Matrix {
         Matrix {
@@ -15,7 +17,7 @@ impl Matrix {
                        [0.0, 0.0, 0.0, 1.0]]
         }
     }
-
+    
     pub fn from_vector(v0: Vector4, v1: Vector4, v2: Vector4, v3: Vector4) -> Matrix {
         Matrix {
             elements: [[v0.x, v0.y, v0.z, v0.w],
@@ -187,7 +189,7 @@ impl Mul for Matrix {
                     r = _mm_add_ps(r, _mm_mul_ps(_mm_broadcast_ss(&self[i][2]), _mm_loadu_ps(&other[2] as *const f32)));
                     r = _mm_add_ps(r, _mm_mul_ps(_mm_broadcast_ss(&self[i][3]), _mm_loadu_ps(&other[3] as *const f32)));
 
-                    _mm_storeu_ps(&mut result[i][0] as *mut f32, r);
+                    _mm_storeu_ps(&mut result[i][0] as *mut f32, r);    
                 }
             }
         }

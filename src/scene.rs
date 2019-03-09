@@ -101,10 +101,8 @@ pub fn trace(scene: &Scene, ray: Ray, order: u8) -> Color {
             color = color + (1.0 - reflectance) * trace(scene, Ray { origin: hit_point, direction: refraction_ray }, order + 1);
         }
     }
-    else {
-        if order == 0 {
-            color = BACK_GROUND;
-        }
+    else if order == 0 {
+        color = BACK_GROUND;
     }
 
     color
