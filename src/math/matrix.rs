@@ -1,8 +1,7 @@
-use std::arch::x86_64::*;
 use std::ops::{Mul, Index, IndexMut};
 use crate::math::vector::*;
 
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct Matrix {
     elements: [[f32; 4]; 4],
 }
@@ -84,7 +83,7 @@ impl Matrix {
 
     pub fn inverse(&self) -> Matrix {
         let mut s = Matrix::identity();
-        let mut t = self.clone();
+        let mut t = *self;
         // Forward elimination
         for i in 0..3 {
             let mut pivot = i;
@@ -177,9 +176,12 @@ impl PartialEq for Matrix {
 impl Mul for Matrix {
     type Output = Matrix;
 
+    #[cfg(target_arch = "x86_64")]
     fn mul(self, other: Matrix) -> Matrix {
+        use std::arch::x86_64::*;
+
         let mut result = Matrix::identity();
-        
+
         if is_x86_feature_detected!("avx2")
         {
             unsafe {
@@ -194,13 +196,21 @@ impl Mul for Matrix {
             }
         }
         else {
-            for i in 0..4 {
-                for j in 0..4 {
-                    result[i][j] = self[i][0] * other[0][j] +
-                                self[i][1] * other[1][j] +
-                                self[i][2] * other[2][j] +
-                                self[i][3] * other[3][j];
-                }
+            panic!("avx2 is disabled");
+        }
+
+        result
+    }
+
+    #[cfg(not(target_arch = "x86_64"))]
+    fn mul(self, other: Matrix) -> Matrix {
+        let mut result = Matrix::identity();
+        for i in 0..4 {
+            for j in 0..4 {
+                result[i][j] = self[i][0] * other[0][j] +
+                            self[i][1] * other[1][j] +
+                            self[i][2] * other[2][j] +
+                            self[i][3] * other[3][j];
             }
         }
         result
