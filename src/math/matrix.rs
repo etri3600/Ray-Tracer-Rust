@@ -1,6 +1,6 @@
 use std::arch::x86_64::*;
 use std::ops::{Mul, Index, IndexMut};
-use math::vector::*;
+use crate::math::vector::*;
 
 #[derive(Clone, Debug)]
 pub struct Matrix {

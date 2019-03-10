@@ -1,7 +1,6 @@
 use image::{Rgba, Pixel};
-
-use math::*;
-
+use serde_derive::Deserialize;
+use crate::math::*;
 use std::ops::{Mul, Add};
 
 const GAMMA: f32 = 2.2;

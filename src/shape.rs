@@ -1,8 +1,9 @@
-use math::*;
-use math::vector::Vector3;
-use math::quaternion::Quat;
-use ray::Ray;
-use color::Color;
+use crate::math::*;
+use crate::math::vector::Vector3;
+use crate::math::quaternion::Quat;
+use crate::ray::Ray;
+use crate::color::Color;
+use serde_derive::Deserialize;
 
 pub trait Intersectable{
     fn intersect(&self, ray: &Ray, normal: &mut Vector3, point: &mut Vector3) -> u8;
@@ -69,10 +70,10 @@ impl Intersectable for Sphere{
 
 #[cfg(test)]
 mod tests {
-    use ::shape::*;
-    use ::color::Color;
-    use ::math::vector::Vector3;
-    use ::ray::Ray;
+    use crate::shape::*;
+    use crate::color::Color;
+    use crate::math::vector::Vector3;
+    use crate::ray::Ray;
     #[test]
     fn goo() { 
         let sphere = Sphere{

@@ -1,13 +1,13 @@
-use shape::Shape;
-use math::vector::Vector3;
-use light::*;
-use color::Color;
-use math::clamp;
+use crate::shape::Shape;
+use crate::math::vector::Vector3;
+use crate::light::*;
+use crate::color::Color;
+use crate::math::clamp;
 
 use std::vec::Vec;
 
 use image::{DynamicImage, GenericImage};
-use ray::Ray;
+use crate::ray::Ray;
 
 pub struct Scene {
     pub width: u32,

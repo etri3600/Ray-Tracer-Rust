@@ -1,4 +1,5 @@
-use math::vector::Vector3;
+use crate::math::vector::Vector3;
+use serde_derive::Deserialize;
 
 #[derive(Copy, Clone, Debug, Deserialize)]
 #[repr(C)]

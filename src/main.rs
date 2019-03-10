@@ -1,8 +1,3 @@
-#[macro_use]
-extern crate serde_derive;
-extern crate image;
-extern crate serde;
-
 mod scene;
 mod math;
 mod ray;
@@ -10,11 +5,11 @@ mod shape;
 mod light;
 mod color;
 
-use scene::*;
-use shape::*;
-use color::Color;
-use light::*;
-use math::vector::Vector3;
+use crate::scene::*;
+use crate::shape::*;
+use crate::color::Color;
+use crate::light::*;
+use crate::math::vector::Vector3;
 
 use std::vec::Vec;
 

@@ -1,5 +1,6 @@
 use std::ops::{Add, Sub, Mul, Neg, Div};
 use serde::{Deserialize, Deserializer};
+use serde_derive::Deserialize;
 
 #[derive(Copy, Clone, Debug, Deserialize)]
 #[repr(C)]

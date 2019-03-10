@@ -1,7 +1,7 @@
-use math::vector::*;
-use color::Color;
-use math::*;
-use shape::Shape;
+use crate::math::vector::*;
+use crate::color::Color;
+use crate::math::*;
+use crate::shape::Shape;
 
 #[derive(PartialEq)]
 pub enum LightType {
