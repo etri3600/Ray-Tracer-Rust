@@ -31,7 +31,7 @@ fn main() {
             specular_color: Color { r: 0.8, g: 0.1, b: 1.0, a: 1.0 },
     });
 
-    let mut shapes = Vec::<&Shape>::new();
+    let mut shapes = Vec::<&dyn Shape>::new();
     shapes.push(&Sphere{
             center: Vector3{
                 x: 0.0,
